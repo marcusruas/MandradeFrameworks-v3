@@ -7,8 +7,9 @@ Framework de pacotes [nuget](https://docs.microsoft.com/pt-br/nuget/what-is-nuge
 Esse framework contém a implementação de diversas bibliotecas amplamente utilizados no mercado e práticas de _design patterns_ que irão ajudar ser concisa e de fácil uso e incremento de features, ajudando desde o início de uma requisição, com sua autenticação, até a sua ponta mais externa, como acesso a banco de dados e comunicação externa.
 
 ## Qual a arquitetura deste framework?
+
 Este projeto foi criado para dar suporte ao .NET Core.
-Cada projeto deste framework possui a estrutura .NET Standard 2.1 (clique [aqui](https://docs.microsoft.com/pt-br/dotnet/standard/net-standard?tabs=net-standard-2-1) para acessar as versões do .NET Core suportadas por essa estrutura)
+Cada projeto deste framework possui a estrutura .NET 6.0.
 
 ## Como implementar cada pacote em minha API ou meu scaffold?
 
@@ -47,7 +48,7 @@ Auxiliares na criação de testes de integração e unitários. Ele também poss
 ## Algumas bibliotecas utilizadas neste framework
 
 [Dapper](https://dapper-tutorial.net/): Para manuseio de banco de dados (CRUD de queries SQL por exemplo);\
-[Entity Framework](https://docs.microsoft.com/pt-br/ef/): Mesmo motivo acima, porém fornece maior abstração para manuseio 
+[Entity Framework](https://docs.microsoft.com/pt-br/ef/): Mesmo motivo acima, porém fornece maior abstração para manuseio
 de queries SQL no seu banco de dados (usuário pode optar por usar ou o Dapper, ou o EF ou ambos).\
 [Mediatr](https://github.com/jbogard/MediatR): Para isolação da implementação de serviços e endpoints em handlers e requests, afim de tornar a isolação de implementação e manuseio mais fácil;\
 [Newtonsoft.Json](https://www.newtonsoft.com/json): Para manusear objetos no formato JSON;\
