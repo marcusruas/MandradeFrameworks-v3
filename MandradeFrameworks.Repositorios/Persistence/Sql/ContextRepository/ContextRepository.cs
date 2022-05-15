@@ -6,7 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using MandradeFrameworks.Repositorios.Models;
 using System.Linq;
-using MandradeFrameworks.SharedKernel.Models;
+using MandradeFrameworks.SharedKernel.Models.Paginacao;
+using MandradeFrameworks.SharedKernel.Models.Specification;
 
 namespace MandradeFrameworks.Repositorios.Persistence.Sql.ContextRepository
 {
@@ -182,7 +183,7 @@ namespace MandradeFrameworks.Repositorios.Persistence.Sql.ContextRepository
         /// <returns>Uma lista de entidades do tipo especificado que satisfaça os critérios informados na classe <see cref="BaseSpecification{T}"/></returns>
         public async Task<List<T>> ConsultaComSpecification<T>(BaseSpecification<T> specification) where T : class
         {
-            var query = AdicionarSpecification<T>(specification);
+            var query = AdicionarSpecification(specification);
             return await query.ToListAsync();
         }
 
@@ -192,21 +193,13 @@ namespace MandradeFrameworks.Repositorios.Persistence.Sql.ContextRepository
         /// do tipo <see cref="TipoMensagem.Erro"/> no sistema de mensageria e será retornado null no retorno desta operação
         /// </summary>
         /// <returns>Uma lista de entidades do tipo especificado que satisfaça os critérios informados na classe <see cref="BaseSpecification{T}"/></returns>
-        public async Task<ListaPaginada<T>> ConsultaComSpecification<T>(BaseSpecificationPaginated<T> specification) where T : class
+        public async Task<ListaPaginada<T>> ConsultaComSpecification<T>(PaginatedBaseSpecification<T> specification) where T : class
         {
             if (specification.Pagina == 0 || specification.QuantidadeRegistros == 0)
                 _mensageria.RetornarMensagemErro("Consulta utilizando paginação não pode ter Quantidade de Registros nem Página 0.");
 
-            var query = AdicionarSpecification<T>(specification);
-            var registrosJaObtidos = (specification.Pagina * specification.QuantidadeRegistros) - specification.QuantidadeRegistros;
-
-            var itens = await query
-                    .Skip(registrosJaObtidos)
-                    .Take(specification.QuantidadeRegistros)
-                    .ToListAsync();
-
-            var quantidadeTotalRegistros = await query.CountAsync();
-            return new ListaPaginada<T>(itens, specification.Pagina, quantidadeTotalRegistros, specification.QuantidadeRegistros);
+            var query = AdicionarSpecification(specification);
+            return await ListaPaginadaFactory.CreateAsync(_context.Set<T>(), specification.Pagina, specification.QuantidadeRegistros);
         }
 
         private IQueryable<T> AdicionarSpecification<T>(BaseSpecification<T> specification) where T : class
@@ -251,15 +244,7 @@ namespace MandradeFrameworks.Repositorios.Persistence.Sql.ContextRepository
             if (pagina == 0 || quantidadeRegistros == 0)
                 _mensageria.RetornarMensagemErro("Consulta utilizando paginação não pode ter Quantidade de Registros nem Página 0.");
 
-            var registrosJaObtidos = (pagina * quantidadeRegistros) - quantidadeRegistros;
-
-            var itens = await _context.Set<T>()
-                    .Skip(registrosJaObtidos)
-                    .Take(quantidadeRegistros)
-                    .ToListAsync();
-
-            var quantidadeTotalRegistros = await _context.Set<T>().CountAsync();
-            return new ListaPaginada<T>(itens, pagina, quantidadeTotalRegistros, quantidadeRegistros);
+            return await ListaPaginadaFactory.CreateAsync(_context.Set<T>(), pagina, quantidadeRegistros);
         }
     }
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Text;
 
-namespace MandradeFrameworks.SharedKernel.Models
+namespace MandradeFrameworks.SharedKernel.Models.Specification
 {
     public abstract class BaseSpecification<T>
     {

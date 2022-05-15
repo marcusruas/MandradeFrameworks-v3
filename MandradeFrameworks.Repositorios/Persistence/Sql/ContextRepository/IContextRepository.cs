@@ -6,6 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using MandradeFrameworks.Mensagens.Models;
+using MandradeFrameworks.SharedKernel.Models.Specification;
+using MandradeFrameworks.SharedKernel.Models.Paginacao;
 
 namespace MandradeFrameworks.Repositorios.Persistence.Sql.ContextRepository
 {
@@ -58,7 +60,7 @@ namespace MandradeFrameworks.Repositorios.Persistence.Sql.ContextRepository
         /// do tipo <see cref="TipoMensagem.Erro"/> no sistema de mensageria e será retornado null no retorno desta operação
         /// </summary>
         /// <returns>Uma lista de entidades do tipo especificado que satisfaça os critérios informados na classe <see cref="BaseSpecification{T}"/></returns>
-        Task<ListaPaginada<T>> ConsultaComSpecification<T>(BaseSpecificationPaginated<T> specification) where T : class;
+        Task<ListaPaginada<T>> ConsultaComSpecification<T>(PaginatedBaseSpecification<T> specification) where T : class;
         /// <summary>
         /// Obtém o primeiro registro da tabela da entidade em questão.
         /// </summary>

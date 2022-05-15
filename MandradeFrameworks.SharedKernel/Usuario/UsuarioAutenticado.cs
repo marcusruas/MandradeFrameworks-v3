@@ -17,6 +17,7 @@ namespace MandradeFrameworks.SharedKernel.Usuario
         }
         
         public string NomeCompleto { get; private set; }
+        public string Email { get; private set; }
         public IEnumerable<string> Permissoes { get; private set; }
 
         private const string NOME_USUARIO_GENERICO = "Token Anônimo";
@@ -37,11 +38,9 @@ namespace MandradeFrameworks.SharedKernel.Usuario
             if (token is null)
                 throw new TokenInvalidoException();
 
-            string nome = ObterPropriedade(token, "nome");
-            IEnumerable<string> permissoes = ObterPropriedade(token, "api_roles").Split(",");
-
-            NomeCompleto = nome;
-            Permissoes = permissoes;
+            NomeCompleto = ObterPropriedade(token, "nome");
+            Email = ObterPropriedade(token, "email");
+            Permissoes = ObterPropriedade(token, "permissoes").Split(",");
         }
 
         private string ObterPropriedade(JwtSecurityToken token, string propriedade)
