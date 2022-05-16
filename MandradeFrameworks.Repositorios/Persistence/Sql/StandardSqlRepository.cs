@@ -24,19 +24,18 @@ namespace MandradeFrameworks.Repositorios.Persistence.Sql
             _configuration = services.ObterServico<IConfiguration>();
             _usuarioAutenticado = services.ObterServico<IUsuarioAutenticado>();
 
-            PASTA_PADRAO_PROJETO = Path.GetDirectoryName(GetType().Assembly.Location);
             DefinirSqlPath();
         }
 
         protected readonly IMensageria _mensageria;
         protected readonly IUsuarioAutenticado _usuarioAutenticado;
-
         private readonly IConfiguration _configuration;
-        private string _sqlFolderPath;
 
-        private const string CAMADA_PADRAO_REPOSITORIOS = "Infrastructure";
+        private string _sqlFolderPath { get; set; }
+
+        private const string CAMADA_PADRAO_REPOSITORIOS = "Repositories";
         private const string PASTA_PADRAO_REPOSITORIOS = "SQL";
-        private readonly string PASTA_PADRAO_PROJETO;
+
 
         /// <summary>
         /// Obtém o conteudo (query SQL) do arquivo cujo nome é informado 
@@ -49,11 +48,14 @@ namespace MandradeFrameworks.Repositorios.Persistence.Sql
         {
             try
             {
+                if (string.IsNullOrWhiteSpace(_sqlFolderPath))
+                    return null;
+
                 string nomeCorrigidoArquivo = nomeArquivo.EndsWith(".sql") ? nomeArquivo.Replace(".sql", string.Empty) : nomeArquivo;
                 string[] linhas;
                 string conteudoArquivo = string.Empty;
 
-                string pathArquivo = Path.Combine(PASTA_PADRAO_PROJETO, _sqlFolderPath, $"{nomeCorrigidoArquivo}.sql");
+                string pathArquivo = Path.Combine(_sqlFolderPath, nomeCorrigidoArquivo);
                 pathArquivo = pathArquivo.Replace("file:\\", "");
 
                 if (!File.Exists(pathArquivo))
@@ -125,14 +127,13 @@ namespace MandradeFrameworks.Repositorios.Persistence.Sql
 
         private void DefinirSqlPath()
         {
-            var namespaces = GetType().Namespace.Split(".").ToList();
-            namespaces = namespaces.Where(ns => ns != CAMADA_PADRAO_REPOSITORIOS).ToList();
+            string raizProjeto = Path.GetDirectoryName(GetType().Assembly.Location) ?? "";
+            List<string> namespaces = GetType().Namespace?
+                .Split(".")
+                .Where(ns => ns != CAMADA_PADRAO_REPOSITORIOS)
+                .ToList() ?? new List<string>();
 
-            _sqlFolderPath = Path.Combine(
-                PASTA_PADRAO_PROJETO,
-                string.Join("\\", namespaces),
-                PASTA_PADRAO_REPOSITORIOS
-            );
+            _sqlFolderPath = Path.Combine(raizProjeto, string.Join("\\", namespaces), PASTA_PADRAO_REPOSITORIOS);
             _sqlFolderPath = _sqlFolderPath.Replace("file:\\", "");
         }
     }
