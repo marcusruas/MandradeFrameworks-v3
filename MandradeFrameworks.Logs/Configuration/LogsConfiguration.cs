@@ -1,13 +1,11 @@
 ﻿using MandradeFrameworks.Logs.Models;
 using System;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Data.SqlClient;
 using Dapper;
 using Serilog;
 using Serilog.Sinks.MSSqlServer;
-using System.Collections.ObjectModel;
 using Serilog.Events;
-using Microsoft.Extensions.Configuration;
+using Serilog.Exceptions;
 
 namespace MandradeFrameworks.Logs.Configuration
 {
@@ -77,12 +75,14 @@ namespace MandradeFrameworks.Logs.Configuration
                 .MinimumLevel.Debug()
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Error)
                 .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Error)
+                .Enrich.FromLogContext()
+                .Enrich.WithExceptionDetails()
                 .WriteTo.MSSqlServer(
                     connectionString: configs.ConnectionString,
-                    sinkOptions: new MSSqlServerSinkOptions() 
-                    { 
-                        TableName = configs.Tabela, 
-                        SchemaName = configs.Schema 
+                    sinkOptions: new MSSqlServerSinkOptions()
+                    {
+                        TableName = configs.Tabela,
+                        SchemaName = configs.Schema
                     }
                 )
                 .CreateLogger();
